@@ -1,24 +1,13 @@
+export const dynamic = "force-dynamic"
 
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table"
 
 import { FilePenIcon, TrashIcon } from "lucide-react"
 import { getCategories } from "@/lib/prismaUtils"
-import { Category } from "@prisma/client"
 
-async function getData() {
-    const res = await fetch('http://localhost:3000/api/admin/categories',{ next: { revalidate: 1 } })
-
-    if (!res.ok) {
-        // This will activate the closest `error.js` Error Boundary
-        throw new Error('Failed to fetch data')
-    }
-
-    return res.json()
-}
 async function CategoriesTable() {
-    const data = await getData()
+    const categories = await getCategories()
     return (
         <Table>
             <TableHeader>
@@ -29,7 +18,7 @@ async function CategoriesTable() {
                 </TableRow>
             </TableHeader>
             <TableBody>
-                {data.map((category: any) => (
+                {categories.map((category) => (
                     <TableRow key={category.id}>
                         <TableCell>{category.name}</TableCell>
                         <TableCell>{category._count.products}</TableCell>
