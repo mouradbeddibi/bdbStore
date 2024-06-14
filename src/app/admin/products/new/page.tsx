@@ -1,4 +1,4 @@
-const dynamic = "force-dynamic"
+export const dynamic = "force-dynamic"
 import { getCategories } from "@/lib/prismaUtils"
 import ProductForm from "./_components/ProductForm"
 
