@@ -1,6 +1,7 @@
 "use server"
 
 import prisma from "@/utils/db"
+import { Product } from "@prisma/client"
 
 export const createCategory = async (name: string) => {
     await prisma.category.create({
@@ -39,4 +40,28 @@ export const createProduct = async (values: {
 export const getProducts = async () => {
     const products = await prisma.product.findMany({ include: { category: true } })
     return products
+}
+export const getProductById = async (productId: string) => {
+    return await prisma.product.findUnique({ where: { id: productId }, include: { category: true } })
+}
+export const updateProduct = async (productId: string, values: {
+    productName: string;
+    productPrice: string;
+    productStock: string;
+    productCategoryId: string;
+}, url: string) => {
+    await prisma.product.update({
+        where: { id: productId }, data: {
+            categoryId: values.productCategoryId,
+            image: url,
+            stock: Number(values.productPrice),
+            price: Number(values.productPrice),
+            name: values.productName
+        }
+    })
+}
+export const deleteProduct = async (id: string) => {
+    await prisma.product.delete({
+        where: { id }
+    })
 }

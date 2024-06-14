@@ -1,6 +1,6 @@
 export const dynamic = "force-dynamic"
 import { getCategories } from "@/lib/prismaUtils"
-import ProductForm from "./_components/ProductForm"
+import ProductForm from "./ProductForm"
 
 
 const NewProductPage = async () => {
