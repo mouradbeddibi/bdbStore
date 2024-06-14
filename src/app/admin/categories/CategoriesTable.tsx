@@ -5,6 +5,7 @@ import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@
 
 import { FilePenIcon, TrashIcon } from "lucide-react"
 import { getCategories } from "@/lib/prismaUtils"
+import {DeleteCategoryModal} from "./DeleteCategoryModal"
 
 async function CategoriesTable() {
     const categories = await getCategories()
@@ -28,10 +29,7 @@ async function CategoriesTable() {
                                 <FilePenIcon className="h-4 w-4" />
                                 <span className="sr-only">Edit</span>
                             </Button>
-                            <Button variant="ghost" size="icon">
-                                <TrashIcon className="h-4 w-4" />
-                                <span className="sr-only">Delete</span>
-                            </Button>
+                            <DeleteCategoryModal categoryId={category.id} />
                         </TableCell>
                     </TableRow>
                 ))}

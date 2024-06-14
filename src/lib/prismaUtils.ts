@@ -9,9 +9,14 @@ export const createCategory = async (name: string) => {
         }
     })
 }
+export const deleteCategory = async (id: string) => {
+    await prisma.category.delete({
+        where: { id }
+    })
+}
 export const getCategories = async () => {
     const categories = await prisma.category.findMany({ include: { _count: true } })
-    
+
     return categories
 }
 export const createProduct = async (values: {

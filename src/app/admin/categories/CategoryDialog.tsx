@@ -10,6 +10,7 @@ import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, Dialog
 import { Label } from "@/components/ui/label"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { createCategory } from "@/lib/prismaUtils"
+import { useRouter } from "next/navigation"
 
 const CategoryformSchema = z.object({
     categoryName: z.string().min(4, {
@@ -18,6 +19,7 @@ const CategoryformSchema = z.object({
 })
 
 function CategoryDialog() {
+    const router = useRouter()
     const form = useForm<z.infer<typeof CategoryformSchema>>({
         resolver: zodResolver(CategoryformSchema),
         defaultValues: {
@@ -26,6 +28,7 @@ function CategoryDialog() {
     })
     async function onSubmit(values: z.infer<typeof CategoryformSchema>) {
         await createCategory(values.categoryName)
+        router.refresh()
     }
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
 

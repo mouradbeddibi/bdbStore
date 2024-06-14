@@ -1,7 +1,7 @@
 datasource db {
-  provider  = "postgresql"
-  url  	    = env("DATABASE_URL")
-  directUrl = env("DATABASE_URL_UNPOOLED")
+    provider  = "postgresql"
+    url       = env("DATABASE_URL")
+    directUrl = env("DATABASE_URL_UNPOOLED")
 }
 
 generator client {
@@ -9,15 +9,15 @@ generator client {
 }
 
 model Product {
-    id         String      @id @default(cuid())
+    id         String   @id @default(cuid())
     name       String
     price      Float
     stock      Int?
     createdAt  DateTime @default(now())
     updatedAt  DateTime @updatedAt
     categoryId String
-    category   Category @relation(fields: [categoryId], references: [id])
-    image     String
+    category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+    image      String
 
     @@map("products")
 }
@@ -29,7 +29,6 @@ model Category {
 
     @@map("categories")
 }
-
 
 model User {
     id            String          @id @default(cuid())
