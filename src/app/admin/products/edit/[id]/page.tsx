@@ -1,14 +1,7 @@
+export const dynamic = 'force-dynamic'
 
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useRouter } from "next/navigation"
-
-import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage"
-import { storage } from "@/app/config"
 import EditProductForm from "./EditProductForm"
 import { getCategories, getProductById } from "@/lib/prismaUtils"
-import { Product } from "@prisma/client"
-
 
 export default async function EditProduct({ params }: { params: { id: string } }) {
     const product = await getProductById(params.id)

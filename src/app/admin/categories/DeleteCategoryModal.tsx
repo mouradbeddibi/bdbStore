@@ -8,7 +8,6 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
-    DialogClose
 } from "@/components/ui/dialog"
 import { deleteCategory } from "@/lib/prismaUtils"
 import { TrashIcon } from "lucide-react"
