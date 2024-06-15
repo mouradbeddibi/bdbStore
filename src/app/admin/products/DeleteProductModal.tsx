@@ -15,15 +15,33 @@ import { deleteCategory, deleteProduct } from "@/lib/prismaUtils"
 import { deleteObject, ref } from "firebase/storage"
 import { TrashIcon } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 
 export default function DeletProductModal({ productId, productImg }: { productId: string, productImg: string }) {
     const router = useRouter()
 
     const onClick = async () => {
-        const fileRef = ref(storage, productImg)
-        await deleteObject(fileRef)
-        await deleteProduct(productId)
-        router.refresh()
+        try {
+            // Delete product
+            await deleteProduct(productId);
+            toast.success("Product Deleted");
+
+            // Delete product image
+            const fileRef = ref(storage, productImg);
+            await deleteObject(fileRef);
+
+            // Refresh router after deletion
+            router.refresh();
+
+        } catch (error:any) {
+            if (error.code === 'not-found') {
+                toast.error("Product or Product Image not found. Deletion failed.");
+            } else {
+                toast.error("Failed to delete product or product image.");
+                console.error("Error deleting product or product image:", error);
+            }
+        }
+
     }
     return (
         <Dialog>

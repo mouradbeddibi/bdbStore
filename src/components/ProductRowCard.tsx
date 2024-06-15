@@ -26,7 +26,7 @@ function ProductRowCard({ product }: { product: ProductWithCategory }) {
             <TableCell className="font-medium"><Link href={`/admin/products/edit/${product.id}`}>{product.name}</Link></TableCell>
             <TableCell className="hidden md:table-cell">{product.category.name}</TableCell>
             <TableCell className="hidden md:table-cell">{product.price} Dh</TableCell>
-            <TableCell className="hidden sm:table-cell">In Stock</TableCell>
+            <TableCell className="hidden sm:table-cell">{product.stock}</TableCell>
             <TableCell className="text-right align-middle">
 
                 <DeletProductModal productId={product.id} productImg={product.image} />

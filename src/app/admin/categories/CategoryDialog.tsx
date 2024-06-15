@@ -10,6 +10,7 @@ import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, Dialog
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { createCategory } from "@/lib/prismaUtils"
 import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 
 const CategoryformSchema = z.object({
     categoryName: z.string().min(4, {
@@ -17,7 +18,7 @@ const CategoryformSchema = z.object({
     }),
 })
 
-function CategoryDialog() {
+function CreateCategoryDialog() {
     const router = useRouter()
     const form = useForm<z.infer<typeof CategoryformSchema>>({
         resolver: zodResolver(CategoryformSchema),
@@ -26,8 +27,14 @@ function CategoryDialog() {
         },
     })
     async function onSubmit(values: z.infer<typeof CategoryformSchema>) {
-        await createCategory(values.categoryName)
-        router.refresh()
+        try {
+            await createCategory(values.categoryName)
+            router.refresh()
+            toast.success("Category Created suuccessfully")
+        } catch (error) {
+            console.log(error)
+            toast.error("Category wasn't created . try again!")
+        }
     }
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
 
@@ -75,4 +82,4 @@ function CategoryDialog() {
     )
 }
 
-export default CategoryDialog
+export default CreateCategoryDialog

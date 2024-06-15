@@ -17,6 +17,8 @@ import { Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
+import { toast } from 'sonner'
+
 const productFormSchema = z.object({
     productName: z.string().min(2, {
         message: "productName must be at least 4 characters.",
@@ -33,6 +35,7 @@ const productFormSchema = z.object({
 })
 
 function ProductForm({ categories }: { categories: Category[] }) {
+
     const router = useRouter()
     const [file, setFile] = useState<File | null>(null)
     const [uploadProgress, setUploadProgress] = useState(0);
@@ -45,7 +48,7 @@ function ProductForm({ categories }: { categories: Category[] }) {
         }
     };
 
-    const handleUpload = (event:any) => {
+    const handleUpload = (event: any) => {
         event.preventDefault();
         if (!file) return;
         const fileRef = ref(storage, `productImages/${file.name}`);
@@ -62,7 +65,11 @@ function ProductForm({ categories }: { categories: Category[] }) {
             () => {
                 getDownloadURL(uploadTask.snapshot.ref).then((downloadUrl) => {
                     setDownloadUrl(downloadUrl)
-                })
+                    toast.success("Image Successfully Uploded")
+                }).catch((error) => {
+                    console.error("Error getting download URL:", error);
+                    toast.error("Failed to Upload. Please try again.");
+                });
             }
         )
     }
@@ -77,14 +84,22 @@ function ProductForm({ categories }: { categories: Category[] }) {
     })
     async function onSubmit(values: z.infer<typeof productFormSchema>) {
         setLoading(true)
-        downloadUrl && await createProduct(values, downloadUrl);
-        setLoading(false)
-        router.push('/admin/products')
+        try {
+            downloadUrl && await createProduct(values, downloadUrl);
+            toast.success("Product Created succefully")
+            setLoading(false)
+            router.push('/admin/products')
+        } catch (error) {
+            console.log(error)
+            toast.error("Product Creation Failed")
+            setLoading(false)
+        }
     }
     return (
         <Form {...form}>
             <form className="grid gap-4" onSubmit={form.handleSubmit(onSubmit)}>
                 <div className="grid grid-cols-2 gap-4">
+
                     <FormField
                         control={form.control}
                         name="productName"
@@ -163,11 +178,11 @@ function ProductForm({ categories }: { categories: Category[] }) {
                         <Button onClick={handleUpload}> Upload</Button>
                     </div>
                     {!downloadUrl && uploadProgress > 0 && (<Progress value={uploadProgress} max={100} />)}
-                    {downloadUrl && <h1 className='text-green-500'>uploded successfully</h1>}
+
 
                 </div>
                 <div className="flex justify-between mt-10">
-                    <Link href="/admin/products" className={buttonVariants({variant:"destructive"})}>Cancel</Link>
+                    <Link href="/admin/products" className={buttonVariants({ variant: "destructive" })}>Cancel</Link>
                     <Button type="submit">Create Product {loading && <Loader2 className='ml-2 animate-spin' />}</Button>
                 </div>
 

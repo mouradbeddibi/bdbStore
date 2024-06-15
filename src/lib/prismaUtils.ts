@@ -37,10 +37,17 @@ export const createProduct = async (values: {
         }
     })
 }
-export const getProducts = async () => {
-    const products = await prisma.product.findMany({ include: { category: true } })
-    return products
-}
+export const getProducts = async (skip: number, take: number) => {
+    const products = await prisma.product.findMany({
+        include: { category: true },
+        orderBy: { updatedAt: "desc" },
+        skip: skip,
+        take: take
+    });
+    const totalProducts = await prisma.product.count(); // Get the total count of products
+    return { products, totalProducts };
+};
+
 export const getProductById = async (productId: string) => {
     return await prisma.product.findUnique({ where: { id: productId }, include: { category: true } })
 }

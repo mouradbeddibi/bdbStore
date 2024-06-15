@@ -1,4 +1,3 @@
-
 "use client"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
@@ -17,6 +16,7 @@ import { Category, Prisma } from "@prisma/client"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { updateProduct } from "@/lib/prismaUtils"
 import { Loader2 } from "lucide-react"
+import { toast } from "sonner"
 
 
 const productFormSchema = z.object({
@@ -68,7 +68,11 @@ export default function EditProductForm({ product, categories }: {
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadUrl) => {
           setDownloadUrl(downloadUrl)
-        })
+          toast.success("New Image uploaded")
+        }).catch((error) => {
+          console.error("Error getting download URL:", error);
+          toast.error("Failed to Upload Product New Image. Please try again.");
+        });
       }
     )
   }
@@ -85,9 +89,16 @@ export default function EditProductForm({ product, categories }: {
 
   const onSubmit = async (values: z.infer<typeof productFormSchema>) => {
     setLoading(true)
-    await updateProduct(product.id, values, downloadUrl ? downloadUrl : product.image);
-    setLoading(false)
-    router.push('/admin/products')
+    try {
+      await updateProduct(product.id, values, downloadUrl ? downloadUrl : product.image);
+      setLoading(false)
+      toast.success("product Updated Successfully")
+      router.push('/admin/products')
+    } catch (error) {
+      console.log(error)
+      toast.error("product Updation Failed. Try Again")
+      setLoading(false)
+    }
   }
 
   return (
@@ -177,7 +188,6 @@ export default function EditProductForm({ product, categories }: {
               <Button onClick={handleUpload}>Upload</Button>
             </div>
             {!downloadUrl && uploadProgress > 0 && (<Progress value={uploadProgress} max={100} />)}
-            {downloadUrl && <h1 className='text-green-500'>Uploaded successfully</h1>}
           </div>
           <Button className="w-full md:w-auto" type="submit">Save Changes{loading && <Loader2 className='ml-2 animate-spin' />}</Button>
         </form>

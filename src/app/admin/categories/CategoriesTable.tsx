@@ -25,10 +25,6 @@ async function CategoriesTable() {
                         <TableCell>{category._count.products}</TableCell>
 
                         <TableCell>
-                            <Button variant="ghost" size="icon">
-                                <FilePenIcon className="h-4 w-4" />
-                                <span className="sr-only">Edit</span>
-                            </Button>
                             <DeleteCategoryModal categoryId={category.id} />
                         </TableCell>
                     </TableRow>

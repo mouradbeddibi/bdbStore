@@ -12,12 +12,19 @@ import {
 import { deleteCategory } from "@/lib/prismaUtils"
 import { TrashIcon } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 
 export function DeleteCategoryModal({ categoryId }: { categoryId: string }) {
     const router = useRouter()
     const onClick = async () => {
-        await deleteCategory(categoryId)
-        router.refresh()
+        try {
+            await deleteCategory(categoryId)
+            router.refresh()
+            toast.success("Category with it's Products Deleted Successfully From Database")
+        } catch (error) {
+            console.log("error")
+            toast.error("Category Deletion Failed")
+        }
     }
     return (
         <Dialog>
