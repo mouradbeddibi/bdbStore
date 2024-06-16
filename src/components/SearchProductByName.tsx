@@ -2,12 +2,12 @@
 
 import { SearchIcon } from "lucide-react"
 import { Input } from "./ui/input"
-import { useSearchParams, useRouter, usePathname } from "next/navigation"
+import { useSearchParams, useRouter } from "next/navigation"
 
 
 function SearchProductByName() {
     const searchParams = useSearchParams()
-    const pathname = usePathname()
+    
     const { replace } = useRouter()
     const handleSearch = (term: string) => {
         const params = new URLSearchParams(searchParams)
@@ -16,7 +16,7 @@ function SearchProductByName() {
         } else {
             params.delete("name")
         }
-        replace(`${pathname}?${params.toString()}`)
+        replace(`/admin/products?${params.toString()}`)
     }
     return (
         <div className="relative">
