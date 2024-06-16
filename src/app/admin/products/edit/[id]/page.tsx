@@ -1,7 +1,10 @@
 export const dynamic = 'force-dynamic'
 
+import Link from "next/link"
 import EditProductForm from "./EditProductForm"
 import { getCategories, getProductById } from "@/lib/prismaUtils"
+import { buttonVariants } from "@/components/ui/button"
+import { ArrowLeft } from "lucide-react"
 
 export default async function EditProduct({ params }: { params: { id: string } }) {
     const product = await getProductById(params.id)
@@ -11,6 +14,10 @@ export default async function EditProduct({ params }: { params: { id: string } }
             <div className="flex flex-col h-full">
                 <header className="bg-gray-100 dark:bg-gray-800 px-4 md:px-6 py-4 border-b border-gray-200 dark:border-gray-700">
                     <div className="container mx-auto flex items-center justify-between">
+                        <Link href={"/admin/products"} className={buttonVariants({ size: "sm", variant: "destructive" })}>
+                            <ArrowLeft className="mr-2" />
+                            Back
+                        </Link>
                         <h1 className="text-2xl font-bold">Edit Product</h1>
                     </div>
                 </header>

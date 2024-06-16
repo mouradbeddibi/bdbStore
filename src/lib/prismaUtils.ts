@@ -4,9 +4,12 @@ import prisma from "@/utils/db"
 import { Product } from "@prisma/client"
 
 export const createCategory = async (name: string) => {
+    const formattedName = name.replace(/\s+/g, '-'); // Replace spaces with dashes
     await prisma.category.create({
         data: {
-            name: name
+            name: name,
+            formattedName: formattedName
+
         }
     })
 }
@@ -47,6 +50,16 @@ export const getProducts = async (skip: number, take: number) => {
     const totalProducts = await prisma.product.count(); // Get the total count of products
     return { products, totalProducts };
 };
+
+export const getProductsByCategory = async (formattedName: string) => {
+    
+    const products = await prisma.category.findUnique({ where: { formattedName: formattedName }, include: { products: true }, })
+    return products
+
+}
+
+
+
 
 export const getProductById = async (productId: string) => {
     return await prisma.product.findUnique({ where: { id: productId }, include: { category: true } })

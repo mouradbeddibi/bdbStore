@@ -4,6 +4,7 @@ import { TableHead, TableRow, TableHeader, TableBody, Table } from "@/components
 import { PaginationPrevious, PaginationItem, PaginationLink, PaginationNext, PaginationContent, Pagination } from "@/components/ui/pagination";
 import Link from "next/link";
 import ProductRowCard from "@/components/ProductRowCard";
+import { PlusIcon } from "lucide-react";
 
 const ProductsPage = async ({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) => {
     const page = parseInt(searchParams.page as string) || 1;
@@ -72,22 +73,3 @@ const ProductsPage = async ({ searchParams }: { searchParams: { [key: string]: s
 
 export default ProductsPage;
 
-function PlusIcon(props: { className: string }) {
-    return (
-        <svg
-            {...props}
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        >
-            <path d="M5 12h14" />
-            <path d="M12 5v14" />
-        </svg>
-    );
-}

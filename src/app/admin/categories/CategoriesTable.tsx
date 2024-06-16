@@ -5,7 +5,8 @@ import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@
 
 import { FilePenIcon, TrashIcon } from "lucide-react"
 import { getCategories } from "@/lib/prismaUtils"
-import {DeleteCategoryModal} from "./DeleteCategoryModal"
+import { DeleteCategoryModal } from "./DeleteCategoryModal"
+import Link from "next/link"
 
 async function CategoriesTable() {
     const categories = await getCategories()
@@ -21,7 +22,7 @@ async function CategoriesTable() {
             <TableBody>
                 {categories.map((category) => (
                     <TableRow key={category.id}>
-                        <TableCell>{category.name}</TableCell>
+                        <TableCell><Link href={`/admin/categories/${category.formattedName}`}>{category.name}</Link></TableCell>
                         <TableCell>{category._count.products}</TableCell>
 
                         <TableCell>

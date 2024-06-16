@@ -23,9 +23,10 @@ model Product {
 }
 
 model Category {
-    id       String    @id @default(cuid())
-    name     String
-    products Product[]
+    id            String    @id @default(cuid())
+    name          String
+    formattedName String    @unique
+    products      Product[]
 
     @@map("categories")
 }
