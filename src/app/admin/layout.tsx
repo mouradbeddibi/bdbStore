@@ -11,7 +11,7 @@ import { BookIcon, HomeIcon, Layers3, LineChartIcon, SearchIcon, ShoppingCartIco
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
 import SearchProductByName from "@/components/SearchProductByName";
-
+import { Suspense } from 'react'
 
 const libre_franklin = Libre_Franklin({
   subsets: ["latin"],
@@ -112,7 +112,9 @@ export default function Layout({ children }: {
                 <h1 className="font-semibold text-lg">Bookshop Dashboard</h1>
               </div>
               <div className="flex flex-1 items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
-                <SearchProductByName />
+                <Suspense>
+                  <SearchProductByName />
+                </Suspense>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button className="rounded-full" size="icon" variant="ghost">
