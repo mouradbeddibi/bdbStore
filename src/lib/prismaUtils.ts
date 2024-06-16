@@ -101,3 +101,84 @@ export const deleteProduct = async (id: string) => {
         where: { id }
     })
 }
+
+
+export const getSchools = async () => {
+    const schools = await prisma.school.findMany({ include: { _count: true } })
+
+    return schools
+}
+export const createSchool = async (name: string) => {
+    const formattedName = name.replace(/\s+/g, '-'); // Replace spaces with dashes
+    await prisma.school.create({
+        data: {
+            name: name,
+            formattedName: formattedName
+
+        }
+    })
+}
+export const deleteSchool = async (id: string) => {
+    await prisma.school.delete({
+        where: { id }
+    })
+}
+
+export async function getListesBySchoolName(schoolName: string) {
+    const schoolWithListes = await prisma.school.findUnique({
+        where: {
+            formattedName: schoolName,
+        },
+        select: {
+            id: true,
+            name: true,
+            listes: {
+                select: {
+                    id: true,
+                    name: true,
+                    price: true,
+                    isVisible: true, // Select isVisible field
+                    products: {
+                        select: {
+                            id: true,
+                        },
+                    },
+                },
+            },
+        },
+    });
+
+    if (!schoolWithListes) {
+        throw new Error(`School with name ${schoolName} not found`);
+    }
+
+    const listesWithProductCount = schoolWithListes.listes.map(liste => ({
+        id: liste.id,
+        name: liste.name,
+        price: liste.price,
+        isVisible: liste.isVisible, // Include isVisible in the mapped object
+        productCount: liste.products.length,
+    }));
+
+    return {
+        id: schoolWithListes.id,
+        name: schoolWithListes.name,
+        listes: listesWithProductCount,
+    };
+}
+
+export const deleteListe = async (id: string) => {
+    await prisma.liste.delete({
+        where: { id }
+    })
+}
+
+export const createListe = async (name: string, schoolId: string) => {
+
+    await prisma.liste.create({
+        data: {
+            name: name,
+            schoolId: schoolId
+        }
+    })
+}

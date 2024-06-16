@@ -8,29 +8,6 @@ generator client {
     provider = "prisma-client-js"
 }
 
-model Product {
-    id         String   @id @default(cuid())
-    name       String
-    price      Float
-    stock      Int?
-    createdAt  DateTime @default(now())
-    updatedAt  DateTime @updatedAt
-    categoryId String
-    category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-    image      String
-
-    @@map("products")
-}
-
-model Category {
-    id            String    @id @default(cuid())
-    name          String
-    formattedName String    @unique
-    products      Product[]
-
-    @@map("categories")
-}
-
 model User {
     id            String          @id @default(cuid())
     name          String?
@@ -105,4 +82,54 @@ model Authenticator {
 enum UserRole {
     ADMIN
     BASIC
+}
+
+model School {
+    id            String   @id @default(cuid())
+    name          String
+    formattedName String   @unique()
+    location      String?
+    createdAt     DateTime @default(now())
+    updatedAt     DateTime @updatedAt
+    listes        Liste[]  @relation("SchoolListe")
+
+    @@map("schools")
+}
+
+model Liste {
+    id        String    @id @default(cuid())
+    name      String
+    schoolId  String
+    price     Float     @default(0)
+    school    School    @relation(fields: [schoolId], references: [id], onDelete: Cascade, name: "SchoolListe")
+    products  Product[] @relation("ListeProduct")
+    isVisible Boolean   @default(false) // Example field for visibility control
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+
+    @@map("listes")
+}
+
+model Product {
+    id         String   @id @default(cuid())
+    name       String
+    price      Float
+    stock      Int?
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
+    categoryId String
+    category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+    image      String
+    listes     Liste[]  @relation("ListeProduct")
+
+    @@map("products")
+}
+
+model Category {
+    id            String    @id @default(cuid())
+    name          String
+    formattedName String    @unique
+    products      Product[]
+
+    @@map("categories")
 }
