@@ -40,19 +40,35 @@ export const createProduct = async (values: {
         }
     })
 }
-export const getProducts = async (skip: number, take: number) => {
+export const getProducts = async (skip: number, take: number, searchTerm?: string) => {
     const products = await prisma.product.findMany({
+        where: {
+            name: {
+                contains: searchTerm, // Use the searchTerm to filter by product name
+                mode: 'insensitive', // Optional: makes the search case-insensitive
+            },
+        },
         include: { category: true },
         orderBy: { updatedAt: "desc" },
         skip: skip,
-        take: take
+        take: take,
     });
-    const totalProducts = await prisma.product.count(); // Get the total count of products
+
+    const totalProducts = await prisma.product.count({
+        where: {
+            name: {
+                contains: searchTerm,
+                mode: 'insensitive',
+            },
+        },
+    }); // Get the total count of products that match the search term
+
     return { products, totalProducts };
 };
 
+
 export const getProductsByCategory = async (formattedName: string) => {
-    
+
     const products = await prisma.category.findUnique({ where: { formattedName: formattedName }, include: { products: true }, })
     return products
 

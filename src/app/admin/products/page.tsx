@@ -1,5 +1,5 @@
 import { getProducts } from "@/lib/prismaUtils";
-import {  buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { TableHead, TableRow, TableHeader, TableBody, Table } from "@/components/ui/table";
 import { PaginationPrevious, PaginationItem, PaginationLink, PaginationNext, PaginationContent, Pagination } from "@/components/ui/pagination";
 import Link from "next/link";
@@ -8,12 +8,23 @@ import { PlusIcon } from "lucide-react";
 
 const ProductsPage = async ({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) => {
     const page = parseInt(searchParams.page as string) || 1;
-    const take = 3;
+    const name = searchParams.name as string | undefined;
+    const take = 10; // Example: Number of items per page
     const skip = (page - 1) * take;
 
-    const { products, totalProducts } = await getProducts(skip, take);
+    const { products, totalProducts } = await getProducts(skip, take, name);
 
     const totalPages = Math.ceil(totalProducts / take);
+
+    // Function to construct URL with query params
+    const buildUrl = (pageNum: number) => {
+        const params = new URLSearchParams();
+        params.set('page', String(pageNum));
+        if (name) {
+            params.set('name', name);
+        }
+        return `?${params.toString()}`;
+    };
 
     return (
         <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6">
@@ -49,19 +60,19 @@ const ProductsPage = async ({ searchParams }: { searchParams: { [key: string]: s
                     <PaginationContent>
                         {page > 1 && (
                             <PaginationItem>
-                                <PaginationPrevious href={`?page=${page - 1}`} />
+                                <PaginationPrevious href={buildUrl(page - 1)} />
                             </PaginationItem>
                         )}
                         {Array.from({ length: totalPages }, (_, index) => (
                             <PaginationItem key={index}>
-                                <PaginationLink href={`?page=${index + 1}`} isActive={index + 1 === page}>
+                                <PaginationLink href={buildUrl(index + 1)} isActive={index + 1 === page}>
                                     {index + 1}
                                 </PaginationLink>
                             </PaginationItem>
                         ))}
                         {page < totalPages && (
                             <PaginationItem>
-                                <PaginationNext href={`?page=${page + 1}`} />
+                                <PaginationNext href={buildUrl(page + 1)} />
                             </PaginationItem>
                         )}
                     </PaginationContent>
@@ -72,4 +83,3 @@ const ProductsPage = async ({ searchParams }: { searchParams: { [key: string]: s
 };
 
 export default ProductsPage;
-
