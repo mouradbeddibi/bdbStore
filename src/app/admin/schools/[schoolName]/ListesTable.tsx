@@ -4,8 +4,7 @@ import Link from "next/link";
 import DeleteListeModal from "./DeleteListeModal";
 
 
-async function SchoolsTable({ schoolWithListes }: {
-
+async function ListesTable({ schoolWithListes, schoolName }: {
     schoolWithListes: {
         id: string;
         name: string;
@@ -15,8 +14,10 @@ async function SchoolsTable({ schoolWithListes }: {
             price: number;
             isVisible: boolean;
             productCount: number;
+            formattedName:string;
         }[];
-    }
+    },
+    schoolName: string
 }) {
     const { listes } = schoolWithListes;
 
@@ -35,7 +36,7 @@ async function SchoolsTable({ schoolWithListes }: {
                 {listes.map((liste) => (
                     <TableRow key={liste.id}>
                         <TableCell>
-                            <Link href={`/admin/listes/${liste.id}`}>{liste.name}</Link>
+                            <Link href={`/admin/schools/${schoolName}/listes/${liste.formattedName}`}>{liste.name}</Link>
                         </TableCell>
                         <TableCell>{liste.price}</TableCell>
                         <TableCell>{liste.productCount}</TableCell>
@@ -51,4 +52,4 @@ async function SchoolsTable({ schoolWithListes }: {
     );
 }
 
-export default SchoolsTable;
+export default ListesTable;

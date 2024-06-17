@@ -97,15 +97,16 @@ model School {
 }
 
 model Liste {
-    id        String    @id @default(cuid())
-    name      String
-    schoolId  String
-    price     Float     @default(0)
-    school    School    @relation(fields: [schoolId], references: [id], onDelete: Cascade, name: "SchoolListe")
-    products  Product[] @relation("ListeProduct")
-    isVisible Boolean   @default(false) // Example field for visibility control
-    createdAt DateTime  @default(now())
-    updatedAt DateTime  @updatedAt
+    id            String    @id @default(cuid())
+    name          String
+    formattedName String    @unique()
+    schoolId      String
+    price         Float     @default(0)
+    school        School    @relation(fields: [schoolId], references: [id], onDelete: Cascade, name: "SchoolListe")
+    products      Product[] @relation("ListeProduct")
+    isVisible     Boolean   @default(false) // Example field for visibility control
+    createdAt     DateTime  @default(now())
+    updatedAt     DateTime  @updatedAt
 
     @@map("listes")
 }
@@ -133,3 +134,4 @@ model Category {
 
     @@map("categories")
 }
+

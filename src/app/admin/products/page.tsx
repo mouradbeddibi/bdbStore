@@ -1,4 +1,4 @@
-import { getProducts } from "@/lib/prismaUtils";
+import { getProductsWithPagination } from "@/lib/prismaUtils";
 import { buttonVariants } from "@/components/ui/button";
 import { TableHead, TableRow, TableHeader, TableBody, Table } from "@/components/ui/table";
 import { PaginationPrevious, PaginationItem, PaginationLink, PaginationNext, PaginationContent, Pagination } from "@/components/ui/pagination";
@@ -12,7 +12,7 @@ const ProductsPage = async ({ searchParams }: { searchParams: { [key: string]: s
     const take = 10; // Example: Number of items per page
     const skip = (page - 1) * take;
 
-    const { products, totalProducts } = await getProducts(skip, take, name);
+    const { products, totalProducts } = await getProductsWithPagination(skip, take, name);
 
     const totalPages = Math.ceil(totalProducts / take);
 

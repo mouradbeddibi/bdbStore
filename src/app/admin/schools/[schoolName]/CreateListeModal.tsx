@@ -71,7 +71,7 @@ function CreateListeDialog({ schoolId }: { schoolId: string }) {
                                     Close
                                 </Button>
                             </DialogClose>
-                            <Button type="submit" >Create Category</Button>
+                            <Button type="submit" >Create Liste</Button>
                         </DialogFooter>
                     </form>
                 </Form>

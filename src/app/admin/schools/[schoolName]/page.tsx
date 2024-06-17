@@ -15,7 +15,7 @@ export default async function Component({ params }: { params: { schoolName: stri
             </div>
 
             <div className="overflow-x-auto">
-                <ListesTable schoolWithListes={schoolWithListes} />
+                <ListesTable schoolWithListes={schoolWithListes} schoolName={params.schoolName}/>
             </div>
 
         </div>
