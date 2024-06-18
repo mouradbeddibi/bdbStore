@@ -33,7 +33,7 @@ const productFormSchema = z.object({
     required_error: "Please select an email to display.",
   })
 })
-type ProductWithCategory = Prisma.ProductGetPayload<{ include: { category: true } }>
+export type ProductWithCategory = Prisma.ProductGetPayload<{ include: { category: true } }>
 
 export default function EditProductForm({ product, categories }: {
   product: ProductWithCategory,

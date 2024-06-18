@@ -140,7 +140,7 @@ export async function getListesBySchoolName(schoolName: string) {
                     price: true,
                     isVisible: true, // Select isVisible field
                     formattedName: true,
-                    products: {
+                    listeItems: {
                         select: {
                             id: true,
                         },
@@ -159,7 +159,7 @@ export async function getListesBySchoolName(schoolName: string) {
         name: liste.name,
         price: liste.price,
         isVisible: liste.isVisible, // Include isVisible in the mapped object
-        productCount: liste.products.length,
+        productCount: liste.listeItems.length,
         formattedName: liste.formattedName
     }));
 
@@ -188,78 +188,119 @@ export const createListe = async (name: string, schoolId: string) => {
 }
 
 export const getProducts = async () => {
-    return await prisma.product.findMany()
-}
-export const getListeProducts = async (formattedName: string) => {
-    const liste = await prisma.liste.findUnique({
-        where: {
-            formattedName
-        },
-        include: {
-            products: true, // Include products in the response
-        },
-    });
-    if (!liste) {
-        throw new Error(`Liste with formattedName ${formattedName} not found`);
-    }
+    const products = await prisma.product.findMany({ include: { category: true } })
 
-    return liste.products;
+    return products
 }
 
-export const addProductToListe = async (formattedName: string, productId: string) => {
+export const updateListeNameAndVisibility = async (formattedName: string, name: string, isVisible: boolean) => {
+    const nameFormattedName = name.replace(/\s+/g, '-');
     await prisma.liste.update({
         where: {
-            formattedName
+            formattedName: formattedName
         },
         data: {
-            products: {
-                connect: {
-                    id: productId,
+            name: name,
+            formattedName: nameFormattedName,
+            isVisible:isVisible
+        },
+
+    });
+}
+
+export async function getListeWithItemsAndProducts(formattedName: string) {
+    try {
+        const liste = await prisma.liste.findUnique({
+            where: {
+                formattedName: formattedName,
+            },
+            include: {
+                listeItems: {
+                    include: {
+                        product: true,
+                    },
                 },
             },
+        });
+
+        if (!liste) {
+            throw new Error(`Liste with formattedName ${formattedName} not found`);
         }
-    });
-}
 
-export const removeProductFromListe = async (formattedName: string, productId: string) => {
-    // Check if the liste exists
-    const liste = await prisma.liste.findUnique({
-        where: { formattedName: formattedName },
-        include: { products: true }, // Include products to check if the product exists in the liste
-    });
+        // Map the result to extract products
+        const products = liste.listeItems.map(item => item.product);
 
-    if (!liste) {
-        throw new Error(`Liste with ID ${formattedName} not found`);
-    }
-
-    // Check if the product is part of the liste
-    const productExistsInListe = liste.products.some(product => product.id === productId);
-
-    if (!productExistsInListe) {
-        throw new Error(`Product with ID ${productId} is not part of Liste with ID ${formattedName}`);
-    }
-
-    // Disconnect the product from the liste
-    await prisma.liste.update({
-        where: { formattedName: formattedName },
-        data: {
-            products: {
-                disconnect: { id: productId },
+        return {
+            liste: {
+                ...liste,
+                listName: liste.name, // Include listName here
             },
-        },
-        include: { products: true }, // Include products to return the updated liste
-    });
-
-
+            items: liste.listeItems,
+            products: products,
+        };
+    } catch (error) {
+        console.error(error);
+        throw error;
+    } finally {
+        await prisma.$disconnect();
+    }
 }
-export const updateListeName = async (formattedName: string, name: string) => {
-    await prisma.liste.update({
-        where: {
-            formattedName
-        },
-        data: {
-            name
-        },
 
-    });
+export async function updateListeWithItems(totalPrice: number, formattedName: string, items: { productId: string; quantity: number }[]) {
+    try {
+        await prisma.$transaction(async (prisma) => {
+            // Find the list to get its ID
+            const liste = await prisma.liste.findUnique({
+                where: { formattedName },
+                select: { id: true },
+            });
+
+            if (!liste) {
+                throw new Error(`Liste with formattedName ${formattedName} not found`);
+            }
+
+            // Delete existing items
+            await prisma.listeItem.deleteMany({
+                where: { listeName: formattedName },
+            });
+
+            // Add new items
+            await prisma.liste.update({
+                where: { formattedName },
+                data: {
+                    listeItems: {
+                        create: items.map(item => ({
+                            productId: item.productId,
+                            quantity: item.quantity,
+                        })),
+                    },
+                    price: totalPrice
+                },
+                include: {
+                    listeItems: {
+                        include: {
+                            product: true,
+                        },
+                    },
+                },
+            });
+        });
+
+        // Fetch and return the updated list with its items
+        const updatedListe = await prisma.liste.findUnique({
+            where: { formattedName },
+            include: {
+                listeItems: {
+                    include: {
+                        product: true,
+                    },
+                },
+            },
+        });
+
+        return updatedListe;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
 }

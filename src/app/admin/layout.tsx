@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { DropdownMenuTrigger, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuItem, DropdownMenuContent, DropdownMenu } from "@/components/ui/dropdown-menu";
 import Image from "next/image";
-import { BookIcon, HomeIcon, Layers3, LineChartIcon, ShoppingCartIcon, UsersIcon } from "lucide-react";
+import { BookIcon, HomeIcon, Layers3, LineChartIcon, SchoolIcon, ShoppingCartIcon, UsersIcon } from "lucide-react";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
 import SearchProductByName from "@/components/SearchProductByName";
@@ -77,11 +77,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     {!isSidebarMinimized && <span>Categories</span>}
                   </Link>
                   <Link
-                    className={clsx("flex items-center gap-3 rounded-lg px-3 py-2 ", isActive("listes") ? activeLinkColor : notactiveLinkColor)}
-                    href="/admin/listes"
+                    className={clsx("flex items-center gap-3 rounded-lg px-3 py-2 ", isActive("schools") ? activeLinkColor : notactiveLinkColor)}
+                    href="/admin/schools"
                   >
-                    <Layers3 className="h-4 w-4" />
-                    {!isSidebarMinimized && <span>Listes</span>}
+                    <SchoolIcon className="h-4 w-4" />
+                    {!isSidebarMinimized && <span>écoles</span>}
                   </Link>
                   <Link
                     className={clsx("flex items-center gap-3 rounded-lg px-3 py-2 ", isActive("customers") ? activeLinkColor : notactiveLinkColor)}

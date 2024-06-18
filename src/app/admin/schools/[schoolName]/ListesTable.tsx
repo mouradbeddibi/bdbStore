@@ -2,6 +2,7 @@ import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@
 import { getListesBySchoolName } from "@/lib/prismaUtils";
 import Link from "next/link";
 import DeleteListeModal from "./DeleteListeModal";
+import { Badge } from "@/components/ui/badge";
 
 
 async function ListesTable({ schoolWithListes, schoolName }: {
@@ -14,7 +15,7 @@ async function ListesTable({ schoolWithListes, schoolName }: {
             price: number;
             isVisible: boolean;
             productCount: number;
-            formattedName:string;
+            formattedName: string;
         }[];
     },
     schoolName: string
@@ -38,9 +39,9 @@ async function ListesTable({ schoolWithListes, schoolName }: {
                         <TableCell>
                             <Link href={`/admin/schools/${schoolName}/listes/${liste.formattedName}`}>{liste.name}</Link>
                         </TableCell>
-                        <TableCell>{liste.price}</TableCell>
+                        <TableCell>{liste.price} DH</TableCell>
                         <TableCell>{liste.productCount}</TableCell>
-                        <TableHead>{liste.isVisible ? 'Yes' : 'No'}</TableHead>
+                        <TableHead><Badge variant={liste.isVisible ? "default" : "destructive"}>{liste.isVisible ? 'Yes' : 'No'}</Badge></TableHead>
 
                         <TableCell>
                             <DeleteListeModal ListeId={liste.id} />
