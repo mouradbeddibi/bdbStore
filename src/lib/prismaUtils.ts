@@ -1,7 +1,7 @@
 "use server"
 
 import prisma from "@/utils/db"
-import { Order, Product } from "@prisma/client"
+import { Order, OrderStatus, Product } from "@prisma/client"
 
 export const createCategory = async (name: string) => {
     const formattedName = name.replace(/\s+/g, '-'); // Replace spaces with dashes
@@ -372,4 +372,88 @@ export async function addOrderItems(orderId: string, orderItems: OrderItem[]): P
         console.error('Error adding order items:', error);
         return null;
     }
+}
+
+
+
+export const getAllOrders = async () => {
+    const orders = await prisma.order.findMany()
+    return orders
+
+}
+type OrderProductDetails = {
+    productId: string;
+    productName: string;
+    categoryId: string;
+    categoryName: string;
+    quantity: number;
+    price: number;
+};
+
+export type OrderDetails = {
+    orderNumber: string;
+    orderName: string;
+    price: number;
+    date: Date;
+    status: OrderStatus;
+    phoneNumber: string;
+    products: OrderProductDetails[];
+};
+
+export async function getOrderDetails(orderId: string): Promise<OrderDetails | null> {
+    const order = await prisma.order.findUnique({
+        where: { id: orderId },
+        select: {
+            orderNumber: true,
+            price: true,
+            name: true,
+            updatedAt: true,
+            orderStatus: true,
+            phoneNumber: true,
+            orderItems: {
+                select: {
+                    quantity: true,
+                    product: {
+                        select: {
+                            id: true,
+                            name: true,
+                            price: true,
+                            category: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    });
+
+    if (!order) {
+        return null;
+    }
+
+    const orderDetails: OrderDetails = {
+        orderNumber: order.orderNumber,
+        orderName: order.name,
+        phoneNumber: order.phoneNumber,
+        price: order.price,
+        date: order.updatedAt,
+        status: order.orderStatus,
+        products: order.orderItems.map(item => ({
+            productId: item.product.id,
+            productName: item.product.name,
+            categoryId: item.product.category.id,
+            categoryName: item.product.category.name,
+            quantity: item.quantity,
+            price: item.product.price
+        })),
+    };
+
+    return orderDetails;
+}
+export const updateOrderSatus = async (orderId: string, orderStatus: OrderStatus) => {
+    await prisma.order.update({ where: { id: orderId }, data: { orderStatus: orderStatus } })
 }

@@ -29,7 +29,7 @@ const Hero = () => {
             </h3>
             <div className="mt-6 md:mt-12 not-prose flex gap-2">
                 <Button asChild>
-                    <Link href="/">
+                    <Link href="/shop">
                         <ShoppingCart className="mr-2" />
                         Explorez notre collection
                     </Link>

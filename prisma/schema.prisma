@@ -177,4 +177,6 @@ enum OrderStatus {
     Pending
     Delivered
     Processing
+    Cancelled
+    Ready_for_Delivery
 }
