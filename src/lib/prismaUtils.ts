@@ -1,7 +1,7 @@
 "use server"
 
 import prisma from "@/utils/db"
-import { Product } from "@prisma/client"
+import { Order, Product } from "@prisma/client"
 
 export const createCategory = async (name: string) => {
     const formattedName = name.replace(/\s+/g, '-'); // Replace spaces with dashes
@@ -189,7 +189,6 @@ export const createListe = async (name: string, schoolId: string) => {
 
 export const getProducts = async () => {
     const products = await prisma.product.findMany({ include: { category: true } })
-
     return products
 }
 
@@ -202,7 +201,7 @@ export const updateListeNameAndVisibility = async (formattedName: string, name: 
         data: {
             name: name,
             formattedName: nameFormattedName,
-            isVisible:isVisible
+            isVisible: isVisible
         },
 
     });
@@ -302,5 +301,75 @@ export async function updateListeWithItems(totalPrice: number, formattedName: st
     } catch (error) {
         console.error(error);
         throw error;
+    }
+}
+
+const generateOrderNumber = (): string => {
+    const timestamp = Date.now().toString().slice(-6) // Last 6 digits of the current timestamp
+    const randomValue = Math.floor(Math.random() * 100000).toString().padStart(4, '0') // 4-digit random value
+    return `${timestamp}${randomValue}` // Total length is 10 characters
+}
+
+export const createOrder = async (name: string, phone: string, price: number) => {
+    const orderNumber = generateOrderNumber()
+    const order = await prisma.order.create({
+        data: {
+            name: name,
+            phoneNumber: phone,
+            orderNumber: orderNumber,
+            price: price
+        }
+    })
+    return order
+}
+
+interface OrderItem {
+    id?: string;
+    orderId?: string;
+    productId: string;
+    quantity: number;
+    createdAt?: Date;
+    updatedAt?: Date;
+}
+export async function addOrderItems(orderId: string, orderItems: OrderItem[]): Promise<Order | null> {
+    try {
+        // Fetch the order to ensure it exists
+        const existingOrder = await prisma.order.findUnique({
+            where: { id: orderId },
+            include: { orderItems: true }, // Include existing orderItems if needed
+        });
+
+        if (!existingOrder) {
+            throw new Error(`Order with id ${orderId} not found`);
+        }
+
+        // Create new orderItems
+        const createdOrderItems = await Promise.all(orderItems.map(async (item) => {
+            const createdOrderItem = await prisma.orderItem.create({
+                data: {
+                    ...item,
+                    orderId: orderId,
+
+                },
+            });
+            return createdOrderItem;
+        }));
+
+        // Update order with new orderItems
+        const updatedOrder = await prisma.order.update({
+            where: { id: orderId },
+            data: {
+                orderItems: {
+                    // Combine existing orderItems with newly created ones
+                    create: createdOrderItems,
+                },
+            },
+            include: { orderItems: true }, // Include orderItems in the returned order
+        });
+
+        return updatedOrder;
+    } catch (error) {
+        console.error('Error adding order items:', error);
+        return null;
     }
 }

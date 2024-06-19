@@ -122,6 +122,7 @@ model Product {
     category   Category    @relation(fields: [categoryId], references: [id], onDelete: Cascade)
     image      String
     listeItems ListeItem[] @relation("ProductListeItem")
+    OrderItem  OrderItem[]
 
     @@map("products")
 }
@@ -146,4 +147,34 @@ model Category {
     products      Product[]
 
     @@map("categories")
+}
+
+model Order {
+    id          String      @id @default(cuid())
+    orderNumber String      
+    name        String
+    phoneNumber String
+    price       Float       @default(0)
+    orderStatus OrderStatus @default(Pending)
+    createdAt   DateTime    @default(now())
+    updatedAt   DateTime    @updatedAt
+    orderItems  OrderItem[]
+}
+
+model OrderItem {
+    id        String   @id @default(cuid())
+    orderId   String
+    productId String
+    quantity  Int
+    order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+    product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now())
+}
+
+enum OrderStatus {
+    Confirmed
+    Pending
+    Delivered
+    Processing
 }
