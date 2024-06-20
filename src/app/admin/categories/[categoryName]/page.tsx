@@ -6,8 +6,14 @@ import { TableHead, TableRow, TableHeader, TableBody, Table } from "@/components
 import Link from "next/link";
 import ProductRowCard from "@/components/ProductRowCard";
 import { ArrowLeft, PlusIcon } from "lucide-react";
+import { auth } from "@/auth";
 
 const ProductsByCategoryPage = async ({ params }: { params: { categoryName: string } }) => {
+    const session = await auth()
+
+    if (!session?.user || session.user.role !== "ADMIN") {
+        return <h1>Not Authorised</h1>
+    }
     const productsData = await getProductsByCategory(params.categoryName);
     if (productsData && productsData.products) {
         return (

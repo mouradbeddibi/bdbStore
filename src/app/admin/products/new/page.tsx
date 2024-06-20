@@ -1,9 +1,15 @@
 export const dynamic = "force-dynamic"
 import { getCategories } from "@/lib/prismaUtils"
 import ProductForm from "./ProductForm"
+import { auth } from "@/auth"
 
 
 const NewProductPage = async () => {
+  const session = await auth()
+
+  if (!session?.user || session.user.role !== "ADMIN") {
+    return <h1>Not Authorised</h1>
+  }
   const categories = await getCategories()
 
   return (
@@ -15,7 +21,7 @@ const NewProductPage = async () => {
             <div>Fill out the form to add a new product to your catalog.</div>
           </div>
           <div>
-            <ProductForm categories={categories}/>
+            <ProductForm categories={categories} />
           </div>
 
         </div>

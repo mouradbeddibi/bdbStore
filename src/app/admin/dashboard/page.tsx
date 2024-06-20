@@ -2,8 +2,15 @@ import "../../globals.css"
 import Link from "next/link"
 import { CardTitle, CardHeader, CardContent, Card } from "@/components/ui/card"
 import Image from "next/image"
+import { BarChartIcon, BookIcon, DollarSignIcon, LineChartIcon, PieChartIcon, ShoppingCartIcon, UsersIcon } from "lucide-react"
+import { auth } from "@/auth"
 
-const Orders = () => {
+const Orders = async () => {
+    const session = await auth()
+
+    if (!session?.user || session.user.role !== "ADMIN") {
+        return <h1>Not Authorised</h1>
+    }
     return (
         <>
             <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6">
@@ -202,156 +209,3 @@ const Orders = () => {
 
 export default Orders
 
-
-function BarChartIcon(props: { className: string }) {
-    return (
-        <svg
-            {...props}
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        >
-            <line x1="12" x2="12" y1="20" y2="10" />
-            <line x1="18" x2="18" y1="20" y2="4" />
-            <line x1="6" x2="6" y1="20" y2="16" />
-        </svg>
-    )
-}
-
-
-function BookIcon(props: { className: string }) {
-    return (
-        <svg
-            {...props}
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        >
-            <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
-        </svg>
-    )
-}
-
-
-function DollarSignIcon(props: { className: string }) {
-    return (
-        <svg
-            {...props}
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        >
-            <line x1="12" x2="12" y1="2" y2="22" />
-            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-        </svg>
-    )
-}
-
-
-
-
-function LineChartIcon(props: { className: string }) {
-    return (
-        <svg
-            {...props}
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        >
-            <path d="M3 3v18h18" />
-            <path d="m19 9-5 5-4-4-3 3" />
-        </svg>
-    )
-}
-
-
-function PieChartIcon(props: { className: string }) {
-    return (
-        <svg
-            {...props}
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        >
-            <path d="M21.21 15.89A10 10 0 1 1 8 2.83" />
-            <path d="M22 12A10 10 0 0 0 12 2v10z" />
-        </svg>
-    )
-}
-
-
-
-
-function ShoppingCartIcon(props: { className: string }) {
-    return (
-        <svg
-            {...props}
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        >
-            <circle cx="8" cy="21" r="1" />
-            <circle cx="19" cy="21" r="1" />
-            <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
-        </svg>
-    )
-}
-
-
-function UsersIcon(props: { className: string }) {
-    return (
-        <svg
-            {...props}
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        >
-            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-            <circle cx="9" cy="7" r="4" />
-            <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-        </svg>
-    )
-}

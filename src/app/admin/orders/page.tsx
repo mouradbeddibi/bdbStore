@@ -1,10 +1,16 @@
 import React from 'react'
 import OrdersTable from './OrdersTable'
 import { getAllOrders } from '@/lib/prismaUtils'
+import { auth } from '@/auth'
 
 export const dynamic = "force-dynamic"
 
 async function AdminOrdersPage() {
+    const session = await auth()
+
+    if (!session?.user || session.user.role !== "ADMIN") {
+        return <h1>Not Authorised</h1>
+    }
     const orders = await getAllOrders()
     return (
 

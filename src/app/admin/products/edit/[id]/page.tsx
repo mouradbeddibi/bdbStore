@@ -5,8 +5,14 @@ import EditProductForm from "./EditProductForm"
 import { getCategories, getProductById } from "@/lib/prismaUtils"
 import { buttonVariants } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
+import { auth } from "@/auth"
 
 export default async function EditProduct({ params }: { params: { id: string } }) {
+    const session = await auth()
+
+    if (!session?.user || session.user.role !== "ADMIN") {
+        return <h1>Not Authorised</h1>
+    }
     const product = await getProductById(params.id)
     const categories = await getCategories()
     if (product) {

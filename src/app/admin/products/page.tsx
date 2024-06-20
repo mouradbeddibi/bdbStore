@@ -5,9 +5,15 @@ import { PaginationPrevious, PaginationItem, PaginationLink, PaginationNext, Pag
 import Link from "next/link";
 import ProductRowCard from "@/components/ProductRowCard";
 import { PlusIcon } from "lucide-react";
+import { auth } from "@/auth";
 
 
 const ProductsPage = async ({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) => {
+    const session = await auth()
+
+    if (!session?.user || session.user.role !== "ADMIN") {
+        return <h1>Not Authorised</h1>
+    }
     
     const page = parseInt(searchParams.page as string) || 1;
     const name = searchParams.name as string | undefined;

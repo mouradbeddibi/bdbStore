@@ -4,11 +4,17 @@ import ListesTable from "./ListesTable"
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
+import { auth } from "@/auth";
 
 export const dynamic = 'force-dynamic'
 
 
 export default async function Component({ params }: { params: { schoolName: string } }) {
+    const session = await auth()
+
+    if (!session?.user || session.user.role !== "ADMIN") {
+        return <h1>Not Authorised</h1>
+    }
     const schoolWithListes = await getListesBySchoolName(params.schoolName);
     return (
         <div className="container mx-auto px-4 py-8">
