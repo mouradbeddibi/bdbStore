@@ -1,12 +1,15 @@
-import { Badge } from "@/components/ui/badge"
+"use client"
 import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { DropdownMenuTrigger, DropdownMenuItem, DropdownMenuContent, DropdownMenu } from "@/components/ui/dropdown-menu"
 import { TableHead, TableRow, TableHeader, TableCell, TableBody, Table } from "@/components/ui/table"
+import { deleteOrder } from "@/lib/prismaUtils"
 import { Order, OrderStatus } from "@prisma/client"
 import clsx from "clsx"
 import { MoveHorizontalIcon } from "lucide-react"
 import Link from "next/link"
-import { FC, ReactHTML, ReactHTMLElement } from "react"
+import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 
 type OrdersTableProps = {
     orders: Order[]
@@ -14,6 +17,16 @@ type OrdersTableProps = {
 
 
 const OrdersTable = ({ orders }: OrdersTableProps) => {
+    const router = useRouter()
+    const handleClick = async (orderId: string) => {
+        try {
+            await deleteOrder(orderId)
+            toast.success("order Deleted")
+            router.refresh()
+        } catch (error) {
+            toast.error("order was not deleted try Again!")
+        }
+    }
     return (
         <Table>
             <TableHeader>
@@ -33,22 +46,38 @@ const OrdersTable = ({ orders }: OrdersTableProps) => {
                         <TableCell className="font-medium">#{order.orderNumber}</TableCell>
                         <TableCell>{order.name}</TableCell>
 
-                        <TableCell className="hidden md:table-cell">{order.createdAt.toISOString()}</TableCell>
+                        <TableCell className="hidden md:table-cell">{order.createdAt.toLocaleDateString()} - {order.createdAt.toLocaleTimeString()}</TableCell>
                         <TableCell className="text-right">{order.price} DH</TableCell>
                         <TableCell className="hidden sm:table-cell">< OrderStatusBadge status={order.orderStatus} /></TableCell>
                         <TableCell className="text-right">
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button size="icon" variant="ghost">
-                                        <MoveHorizontalIcon className="w-4 h-4" />
-                                        <span className="sr-only">Actions</span>
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                    <DropdownMenuItem><Link href={`/admin/orders/${order.id}`} className="w-full">View Order</Link></DropdownMenuItem>
-                                    {/* <DropdownMenuItem>Customer details</DropdownMenuItem> */}
-                                </DropdownMenuContent>
-                            </DropdownMenu>
+                            <Dialog>
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button size="icon" variant="ghost">
+                                            <MoveHorizontalIcon className="w-4 h-4" />
+                                            <span className="sr-only">Actions</span>
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end">
+                                        <DropdownMenuItem><Link href={`/admin/orders/${order.id}`} className="w-full">View Order</Link></DropdownMenuItem>
+                                        <DialogTrigger className="w-full ">
+                                            <DropdownMenuItem className="cursor-pointer">Delete Order</DropdownMenuItem>
+                                        </DialogTrigger>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                                <DialogContent>
+                                    <DialogHeader>
+                                        <DialogTitle>Are you absolutely sure?</DialogTitle>
+                                        <DialogDescription>
+                                            This action cannot be undone. This will permanently delete this Order.
+                                        </DialogDescription>
+                                    </DialogHeader>
+                                    <DialogFooter className="sm:justify-end">
+                                        <Button variant={"destructive"} onClick={() => handleClick(order.id)}>Delete</Button>
+                                    </DialogFooter>
+                                </DialogContent>
+                            </Dialog>
+
                         </TableCell>
                     </TableRow>
                 ))}

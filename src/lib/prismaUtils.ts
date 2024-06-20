@@ -457,3 +457,7 @@ export async function getOrderDetails(orderId: string): Promise<OrderDetails | n
 export const updateOrderSatus = async (orderId: string, orderStatus: OrderStatus) => {
     await prisma.order.update({ where: { id: orderId }, data: { orderStatus: orderStatus } })
 }
+
+export const deleteOrder = async (orderId: string) => {
+    await prisma.order.delete({ where: { id: orderId } })
+}

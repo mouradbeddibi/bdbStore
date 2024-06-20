@@ -22,6 +22,8 @@ import {
 import { Input } from '@/components/ui/input';
 import { addOrderItems, createOrder } from '@/lib/prismaUtils';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 interface OrderItem {
     id?: string;
@@ -47,6 +49,8 @@ const OrderFormSchema = z.object({
 const OrderPage: React.FC<Props> = ({ products }) => {
     const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
     const [isloading, setIsLoading] = useState(false);
+    const router = useRouter()
+
     const form = useForm<z.infer<typeof OrderFormSchema>>({
         resolver: zodResolver(OrderFormSchema),
         defaultValues: {
@@ -64,6 +68,8 @@ const OrderPage: React.FC<Props> = ({ products }) => {
             toast.success("order created successfully")
             setOrderItems([])
             setIsLoading(false)
+            router.push(`/shop/${order.id}`)
+
         } catch (error) {
             toast.error("Error while creating your order plese try again later!")
             setIsLoading(false)
@@ -128,12 +134,12 @@ const OrderPage: React.FC<Props> = ({ products }) => {
 
     return (
         <div className="flex h-screen">
-            <ScrollArea className="w-3/4 h-screen  rounded-md border p-4">
+            <ScrollArea className="w-3/4 h-screen rounded-md border p-4">
 
                 {Object.keys(groupedProducts).map((categoryId) => (
-                    <div key={categoryId}>
+                    <div key={categoryId} className='border rounded-lg p-2 my-2'>
                         <h2 className="text-lg font-bold mb-2">{products.find(p => p.category.id === categoryId)?.category.name}</h2>
-                        <div className="grid grid-cols-5 gap-2">
+                        <div className="grid grid-cols-3 xl:grid-cols-4 gap-5">
                             {groupedProducts[categoryId].map((product, index) => (
                                 <ProductCard key={index} product={product} addToOrder={addToOrder} />
                             ))}
@@ -142,9 +148,6 @@ const OrderPage: React.FC<Props> = ({ products }) => {
                 ))}
             </ScrollArea>
             <ScrollArea className="w-1/4 h-screen  rounded-md border p-4">
-
-
-
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="mt-2">
                         <FormField
@@ -202,6 +205,7 @@ const OrderPage: React.FC<Props> = ({ products }) => {
                     ))}
                 </ul>
             </ScrollArea>
+
         </div>
     );
 };
@@ -210,22 +214,24 @@ export default OrderPage;
 
 const ProductCard: React.FC<{ product: Product; addToOrder: (product: Product) => void }> = ({ product, addToOrder }) => {
     return (
-        <Card className="p-1">
-            <CardContent className="overflow-visible p-0 flex justify-center items-center">
-                <img alt={product.name} className="object-cover h-[80px] max-w-full" src={product.image} />
+        <Card className="p-1 w-[180px] h-full">
+            <CardContent className="overflow-visible p-0 flex justify-center items-center h-[72px]">
+                <Image alt={product.name} className="object-contain h-full w-full" width={200} height={200} src={product.image} />
             </CardContent>
-            <CardFooter className="text-small flex flex-col justify-between items-center p-1">
+            <CardFooter className="text-small flex flex-col justify-between items-center p-1 h-[80px]">
                 <div className="flex justify-between w-full text-xs">
                     <b>{product.name}</b>
                     <p className="text-default-500">${product.price}</p>
                 </div>
-                <Button onClick={() => addToOrder(product)} className="mt-1 w-full bg-blue-500 text-white px-2 py-1 text-xs">
+                <Button onClick={() => addToOrder(product)} className="mt-1 w-full text-white px-2 py-1 text-xs">
                     Add to Order
                 </Button>
             </CardFooter>
         </Card>
     );
 };
+
+
 
 const ListeProductCard = ({ item, name, price, removeFromOrder }: { item: OrderItem, name: string | undefined, price: number | undefined, removeFromOrder: (productId: string) => void }) => {
     const [isLoading, setIsLoading] = useState(false);
@@ -255,3 +261,5 @@ const ListeProductCard = ({ item, name, price, removeFromOrder }: { item: OrderI
         </Card>
     );
 };
+
+

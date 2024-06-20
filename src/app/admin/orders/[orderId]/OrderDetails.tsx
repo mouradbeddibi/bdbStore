@@ -57,7 +57,7 @@ function OrderDetailsForm({ orderDetails, orderId }: { orderDetails: OrderDetail
             <div className="flex items-center justify-between mb-6">
                 <div>
                     <h1 className="text-2xl font-bold">Order #{orderDetails.orderNumber}</h1>
-                    <p className="text-muted-foreground">Placed on {orderDetails.date.toDateString()} / {orderDetails.date.toLocaleTimeString()}</p>
+                    <p className="text-muted-foreground">Placed on {orderDetails.date.toLocaleDateString()} - {orderDetails.date.toLocaleTimeString()}</p>
                 </div>
                 <div className="flex items-center gap-2">
                     <PhoneIcon className="w-5 h-5 text-muted-foreground" />
