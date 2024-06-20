@@ -1,5 +1,5 @@
 // export { auth as middleware } from "@/auth"
-import { auth, signOut } from "@/auth"
+import { auth } from "@/auth"
 
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
@@ -8,7 +8,7 @@ import type { NextRequest } from 'next/server'
 export async function middleware(request: NextRequest) {
     const session = await auth()
 
-    if (!session || session.user.role !== "ADMIN") {
+    if (!session?.user || session.user.role !== "ADMIN") {
         return NextResponse.redirect(new URL('/', request.url))
     }
 }
