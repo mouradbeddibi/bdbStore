@@ -46,6 +46,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const isActive = (href: string) => {
     return path.startsWith(`/admin/${href}`);
   };
+  
   return (
     <html lang="en">
       <head>

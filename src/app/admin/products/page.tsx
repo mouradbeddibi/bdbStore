@@ -6,7 +6,9 @@ import Link from "next/link";
 import ProductRowCard from "@/components/ProductRowCard";
 import { PlusIcon } from "lucide-react";
 
+
 const ProductsPage = async ({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) => {
+    
     const page = parseInt(searchParams.page as string) || 1;
     const name = searchParams.name as string | undefined;
     const take = 10; // Example: Number of items per page
@@ -25,6 +27,9 @@ const ProductsPage = async ({ searchParams }: { searchParams: { [key: string]: s
         }
         return `?${params.toString()}`;
     };
+    
+
+
 
     return (
         <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6">
