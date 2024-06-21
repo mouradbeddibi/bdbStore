@@ -461,3 +461,4 @@ export const updateOrderSatus = async (orderId: string, orderStatus: OrderStatus
 export const deleteOrder = async (orderId: string) => {
     await prisma.order.delete({ where: { id: orderId } })
 }
+
