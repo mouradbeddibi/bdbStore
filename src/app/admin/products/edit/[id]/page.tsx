@@ -2,7 +2,7 @@ export const dynamic = 'force-dynamic'
 
 import Link from "next/link"
 import EditProductForm from "./EditProductForm"
-import { getCategories, getProductById } from "@/lib/prismaUtils"
+import { getCategories, getProductById, getSubCategories } from "@/lib/prismaUtils"
 import { buttonVariants } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
 import { auth } from "@/auth"
@@ -15,6 +15,7 @@ export default async function EditProduct({ params }: { params: { id: string } }
     }
     const product = await getProductById(params.id)
     const categories = await getCategories()
+    const subCategories = await getSubCategories()
     if (product) {
         return (
             <div className="flex flex-col h-full">
@@ -29,7 +30,7 @@ export default async function EditProduct({ params }: { params: { id: string } }
                 </header>
                 <div className="flex-1 container mx-auto grid md:grid-cols-2 gap-8 p-4 md:p-6">
 
-                    <EditProductForm product={product} categories={categories} />
+                    <EditProductForm product={product} categories={categories} subCategories={subCategories}/>
                 </div>
             </div>
         )

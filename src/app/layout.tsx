@@ -28,7 +28,7 @@ export default function RootLayout({
         fontSans.variable
       )}>
         {children}
-        <Toaster richColors position="bottom-left" />
+        <Toaster richColors position="top-left" theme="dark"  />
       </body>
 
     </html>

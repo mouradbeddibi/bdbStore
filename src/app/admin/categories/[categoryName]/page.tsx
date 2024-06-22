@@ -7,6 +7,7 @@ import Link from "next/link";
 import ProductRowCard from "@/components/ProductRowCard";
 import { ArrowLeft, PlusIcon } from "lucide-react";
 import { auth } from "@/auth";
+import CreateSubCategoryDialog from "./SubCategoryModal";
 
 const ProductsByCategoryPage = async ({ params }: { params: { categoryName: string } }) => {
     const session = await auth()
@@ -28,10 +29,13 @@ const ProductsByCategoryPage = async ({ params }: { params: { categoryName: stri
                         <h2 className="text-2xl font-bold">{params.categoryName}</h2>
 
                     </div>
-                    <Link href={"/admin/products/new"} className={buttonVariants({ size: "sm" })}>
-                        <PlusIcon className="mr-2 h-4 w-4" />
-                        Add Product
-                    </Link>
+                    <div className="flex gap-5">
+                        <Link href={"/admin/products/new"} className={buttonVariants({ size: "sm" })}>
+                            <PlusIcon className="mr-2 h-4 w-4" />
+                            Add Product
+                        </Link>
+                        <CreateSubCategoryDialog categoryName={params.categoryName} />
+                    </div>
                 </div>
                 <div className="border shadow-sm rounded-lg">
                     <Table>

@@ -13,6 +13,16 @@ export const createCategory = async (name: string) => {
         }
     })
 }
+
+export const createSubCategory = async (name: string, categoryName: string) => {
+    await prisma.subCategory.create({
+
+        data: {
+            name: name,
+            categoryName: categoryName,
+        }
+    })
+}
 export const deleteCategory = async (id: string) => {
     await prisma.category.delete({
         where: { id }
@@ -23,11 +33,17 @@ export const getCategories = async () => {
 
     return categories
 }
+export const getSubCategories = async () => {
+    const categories = await prisma.subCategory.findMany({ include: { category: true } })
+
+    return categories
+}
 export const createProduct = async (values: {
     productName: string;
     productPrice: string;
     productStock: string;
     productCategoryId: string;
+    productSubCategoryId: string;
 }, url: string) => {
     await prisma.product.create({
         data: {
@@ -35,7 +51,8 @@ export const createProduct = async (values: {
             price: Number(values.productPrice),
             stock: Number(values.productStock),
             image: url,
-            categoryId: values.productCategoryId
+            categoryId: values.productCategoryId,
+            subCategoryId: values.productSubCategoryId
 
         }
     })
@@ -78,13 +95,14 @@ export const getProductsByCategory = async (formattedName: string) => {
 
 
 export const getProductById = async (productId: string) => {
-    return await prisma.product.findUnique({ where: { id: productId }, include: { category: true } })
+    return await prisma.product.findUnique({ where: { id: productId }, include: { category: true, subCategory: true } })
 }
 export const updateProduct = async (productId: string, values: {
     productName: string;
     productPrice: string;
     productStock: string;
     productCategoryId: string;
+    productSubCategoryId: string | undefined
 }, url: string) => {
     await prisma.product.update({
         where: { id: productId }, data: {
@@ -92,7 +110,8 @@ export const updateProduct = async (productId: string, values: {
             image: url,
             stock: Number(values.productPrice),
             price: Number(values.productPrice),
-            name: values.productName
+            name: values.productName,
+            subCategoryId: values.productSubCategoryId === "undefined" ? undefined : values.productSubCategoryId
         }
     })
 }
@@ -188,7 +207,7 @@ export const createListe = async (name: string, schoolId: string) => {
 }
 
 export const getProducts = async () => {
-    const products = await prisma.product.findMany({ include: { category: true } })
+    const products = await prisma.product.findMany({ include: { category: true, subCategory: true } })
     return products
 }
 

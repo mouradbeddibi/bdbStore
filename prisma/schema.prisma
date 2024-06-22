@@ -5,21 +5,21 @@ datasource db {
 }
 
 generator client {
-    provider = "prisma-client-js"
+    provider        = "prisma-client-js"
     previewFeatures = ["driverAdapters"]
 }
 
 model User {
-    id            String          @id @default(cuid())
+    id            String    @id @default(cuid())
     name          String?
-    role          UserRole        @default(BASIC)
-    email         String          @unique
+    role          UserRole  @default(BASIC)
+    email         String    @unique
     emailVerified DateTime?
     image         String?
     accounts      Account[]
     sessions      Session[]
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    createdAt     DateTime  @default(now())
+    updatedAt     DateTime  @updatedAt
 
     @@map("Users")
 }
@@ -43,7 +43,6 @@ model Account {
     user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
     @@id([provider, providerAccountId])
-
     @@map("Accounts")
 }
 
@@ -67,7 +66,6 @@ model VerificationToken {
     @@id([identifier, token])
     @@map("VerificationTokens")
 }
-
 
 enum UserRole {
     ADMIN
@@ -102,19 +100,41 @@ model Liste {
 }
 
 model Product {
-    id         String      @id @default(cuid())
-    name       String
-    price      Float
-    stock      Int?
-    createdAt  DateTime    @default(now())
-    updatedAt  DateTime    @updatedAt
-    categoryId String
-    category   Category    @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-    image      String
-    listeItems ListeItem[] @relation("ProductListeItem")
-    OrderItem  OrderItem[]
+    id            String       @id @default(cuid())
+    name          String
+    price         Float
+    stock         Int?
+    createdAt     DateTime     @default(now())
+    updatedAt     DateTime     @updatedAt
+    categoryId    String
+    category      Category     @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+    subCategoryId String? // Optional reference to SubCategory
+    subCategory   SubCategory? @relation(fields: [subCategoryId], references: [id], onDelete: Cascade)
+    image         String
+    listeItems    ListeItem[]  @relation("ProductListeItem")
+    OrderItem     OrderItem[]
 
     @@map("products")
+}
+
+model Category {
+    id            String        @id @default(cuid())
+    name          String
+    formattedName String        @unique()
+    products      Product[]
+    subCategories SubCategory[] // Relation to SubCategory
+
+    @@map("categories")
+}
+
+model SubCategory {
+    id           String    @id @default(cuid())
+    name         String
+    categoryName String
+    category     Category  @relation(fields: [categoryName], references: [formattedName], onDelete: Cascade)
+    products     Product[] // Relation to Product
+
+    @@map("subcategories")
 }
 
 model ListeItem {
@@ -130,18 +150,9 @@ model ListeItem {
     @@map("liste_items")
 }
 
-model Category {
-    id            String    @id @default(cuid())
-    name          String
-    formattedName String    @unique()
-    products      Product[]
-
-    @@map("categories")
-}
-
 model Order {
     id          String      @id @default(cuid())
-    orderNumber String      
+    orderNumber String
     name        String
     phoneNumber String
     price       Float       @default(0)
